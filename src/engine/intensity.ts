@@ -32,10 +32,15 @@ export interface Modifier {
  * Surplus calories → harder training to burn it; under-fuelling → easier for
  * safety; hitting protein → small boost (you recover well enough to push);
  * processed/sugary food → a "junk tax"; no log → small nudge to start logging.
+ *
+ * `inProgress` is for live forecasts of a day that hasn't ended: a low calorie
+ * count then just means "more meals to come", so it isn't treated as under-fuelling.
  */
-export function dietModifier(t: DayTotals, targets: Targets, goal: Goal): Modifier {
+export function dietModifier(t: DayTotals, targets: Targets, goal: Goal, inProgress = false): Modifier {
   if (t.entries === 0) {
-    return { value: 0.05, reasons: ['No meals logged yesterday: +5% (log food to calibrate)'] };
+    return inProgress
+      ? { value: 0.05, reasons: ['No meals logged yet today: +5% unless you log food'] }
+      : { value: 0.05, reasons: ['No meals logged yesterday: +5% (log food to calibrate)'] };
   }
   const reasons: string[] = [];
   let value = 0;
@@ -47,6 +52,8 @@ export function dietModifier(t: DayTotals, targets: Targets, goal: Goal): Modifi
     if (goal === 'build_muscle') surplus /= 2;
     value += surplus;
     reasons.push(`Calorie surplus (${Math.round(ratio * 100)}% of target): ${pct(surplus)}`);
+  } else if (ratio < 0.7 && inProgress) {
+    reasons.push(`${Math.round(ratio * 100)}% of calorie target logged so far (day in progress)`);
   } else if (ratio < 0.7) {
     value -= 0.15;
     reasons.push(`Under-fuelled (${Math.round(ratio * 100)}% of target): -15% for safety`);
@@ -83,7 +90,7 @@ export function penaltyLoad(d: GameData, date: DateKey): Modifier {
   };
 }
 
-export function computeIntensity(d: GameData, date: DateKey): IntensityBreakdown {
+export function computeIntensity(d: GameData, date: DateKey, dietInProgress = false): IntensityBreakdown {
   const base = round2(d.progression);
   if (!d.profile) return { base, diet: 0, penalty: 0, total: base, reasons: [] };
 
@@ -91,7 +98,7 @@ export function computeIntensity(d: GameData, date: DateKey): IntensityBreakdown
   // There is no "yesterday" to have logged on the very first day.
   const diet: Modifier = date === d.profile.createdAt
     ? { value: 0, reasons: ['First day: no diet history yet'] }
-    : dietModifier(totalsFor(d.foods, addDays(date, -1)), targets, d.profile.goal);
+    : dietModifier(totalsFor(d.foods, addDays(date, -1)), targets, d.profile.goal, dietInProgress);
   const pen = penaltyLoad(d, date);
   const total = round2(Math.min(INTENSITY_MAX, Math.max(INTENSITY_MIN, base * (1 + diet.value) + pen.value)));
 
@@ -117,7 +124,7 @@ export function projectIntensity(d: GameData, date: DateKey, outcome: 'cleared' 
     progression: affects ? nextProgression(d.progression, outcome) : d.progression,
     days: prev ? { ...d.days, [prevKey]: { ...prev, status: prev.isRest ? 'rest' : outcome } } : d.days,
   };
-  return computeIntensity(sim, date);
+  return computeIntensity(sim, date, true);
 }
 
 export function nextProgression(current: number, outcome: 'cleared' | 'partial' | 'missed'): number {

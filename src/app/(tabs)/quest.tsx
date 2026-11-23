@@ -37,6 +37,11 @@ export default function Quest() {
             ? 'Scheduled recovery. Move lightly and stretch — no penalty today.'
             : 'Complete every task before midnight. Failure carries a penalty.'}
         </Muted>
+        {!rec.isRest && (
+          <Text style={{ color: intensityColor(rec.intensity.total), fontWeight: '900', fontSize: 15 }}>
+            Intensity ×{rec.intensity.total.toFixed(2)}
+          </Text>
+        )}
       </View>
 
       {rec.claimed && (
@@ -48,15 +53,6 @@ export default function Quest() {
               <Muted>+{rec.xpDelta} XP earned today. Extra reps still count toward your lifetime totals.</Muted>
             </View>
           </View>
-        </Panel>
-      )}
-
-      {!rec.isRest && (
-        <Panel title="Intensity" icon="speedometer" right={<Text style={{ color: intensityColor(rec.intensity.total), fontWeight: '900', fontSize: 20 }}>×{rec.intensity.total.toFixed(2)}</Text>}>
-          {rec.intensity.reasons.map((r) => (
-            <Muted key={r} style={{ fontSize: 13 }}>• {r}</Muted>
-          ))}
-          <Button label="See calendar" icon="calendar-month" variant="ghost" small onPress={() => router.push('/calendar')} />
         </Panel>
       )}
 
@@ -79,6 +75,15 @@ export default function Quest() {
           {rec.penaltyTasks.map((t) => (
             <TaskRow key={t.id} task={t} penalty onChange={(v) => setTask(t.id, v)} />
           ))}
+        </Panel>
+      )}
+
+      {!rec.isRest && (
+        <Panel title="Intensity" icon="speedometer" right={<Text style={{ color: intensityColor(rec.intensity.total), fontWeight: '900', fontSize: 20 }}>×{rec.intensity.total.toFixed(2)}</Text>}>
+          {rec.intensity.reasons.map((r) => (
+            <Muted key={r} style={{ fontSize: 13 }}>• {r}</Muted>
+          ))}
+          <Button label="See calendar" icon="calendar-month" variant="ghost" small onPress={() => router.push('/calendar')} />
         </Panel>
       )}
 

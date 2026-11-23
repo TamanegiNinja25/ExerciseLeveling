@@ -43,6 +43,15 @@ The release APK is built in GitHub Actions (`.github/workflows/android.yml`): `e
 
 ## Changelog
 
+### v1.0.0 UI polish (2026-11-23, before tagging)
+Driven by a snapshot review with 4 weeks of simulated data:
+- **Forecast fix:** `dietModifier(..., inProgress)` no longer flags a day still in progress as "under-fuelled" (a 3 PM lunch-only log showed −15%). Used by the Fuel impact panel and `projectIntensity`. Surplus/junk still count immediately. Test added.
+- Status: intensity breakdown chips (Base / Diet / Penalty), next-rank hint, stat "+" buttons hidden behind an "Assign N pts" toggle, banner shows only fresh unread notices (priority: penalty > rank > level-up > achievement) and can be dismissed (`markMessagesRead(id)`).
+- Quest: tasks come first, the intensity breakdown moves below, finished tasks collapse their controls (tap to reopen).
+- Calendar: cells use a single colour scale (status). Multipliers are neutral text.
+- Panel headers truncate long titles instead of colliding with the right-side value.
+- README screenshot gallery (`docs/screenshots/`).
+
 ### v1.0.0 (2026-11-23)
 Initial release.
 - Expo SDK 58 / Expo Router app scaffold with dark "system window" UI kit and a generated chevron icon set.

@@ -4,10 +4,10 @@ import { Pressable, Text, View } from 'react-native';
 import {
   Avatar, Button, Icon, Label, Muted, Panel, ProgressBar, RankBadge, Screen, styles, tap,
 } from '@/components/ui';
-import { msUntilMidnight, todayKey } from '@/engine/dates';
-import { power, rankForLevel, STAT_LABELS, xpToNext } from '@/engine/leveling';
+import { addDays, msUntilMidnight, todayKey } from '@/engine/dates';
+import { power, RANK_THRESHOLDS, rankForLevel, STAT_LABELS, xpToNext } from '@/engine/leveling';
 import { taskCompletion } from '@/engine/quests';
-import type { StatKey } from '@/engine/types';
+import type { MessageKind, StatKey } from '@/engine/types';
 import { useGame } from '@/store/useGame';
 import { colors, intensityColor, rankColor } from '@/theme';
 
@@ -22,6 +22,9 @@ function useCountdown() {
   const s = Math.floor((ms % 60_000) / 1000);
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
+
+/** Which unread notice deserves the home-screen banner. */
+const BANNER_PRIORITY: Record<MessageKind, number> = { penalty: 5, rank: 4, levelup: 3, achievement: 2, quest: 1, info: 1 };
 
 function Tile({ icon, value, label, color = colors.text }: { icon: string; value: string | number; label: string; color?: string }) {
   return (
@@ -41,7 +44,11 @@ export default function Status() {
   const need = xpToNext(g.level);
   const today = g.days[todayKey()];
   const unread = g.messages.filter((m) => !m.read);
-  const latest = unread[0];
+  // Only surface fresh news (today/yesterday); older items wait in the System Log.
+  const fresh = unread.filter((m) => m.date >= addDays(todayKey(), -1));
+  const latest = [...fresh].sort((a, b) => BANNER_PRIORITY[b.kind] - BANNER_PRIORITY[a.kind])[0];
+  const nextRank = [...RANK_THRESHOLDS].reverse().find((r) => r.minLevel > g.level);
+  const [assigning, setAssigning] = useState(false);
 
   return (
     <Screen>
@@ -76,7 +83,11 @@ export default function Status() {
               <View style={{ flex: 1 }}>
                 <Text style={{ color: colors.text, fontWeight: '900' }}>{latest.title}</Text>
                 <Muted>{latest.body}</Muted>
+                {fresh.length > 1 && <Text style={{ color: colors.faint, fontSize: 12, marginTop: 2 }}>+{fresh.length - 1} more in System Log</Text>}
               </View>
+              <Pressable hitSlop={10} onPress={() => g.markMessagesRead(latest.id)} accessibilityLabel="Dismiss">
+                <Icon name="close" size={18} color={colors.muted} />
+              </Pressable>
             </View>
           </Panel>
         </Pressable>
@@ -85,6 +96,14 @@ export default function Status() {
       <Panel title={`Level ${g.level}`} icon="star-circle" right={<Text style={{ color: colors.muted, fontWeight: '700' }}>{g.xp} / {need} XP</Text>}>
         <ProgressBar value={g.xp / need} height={10} />
         <Muted style={{ fontSize: 12 }}>{need - g.xp} XP to level {g.level + 1} · Lifetime {g.totalXp.toLocaleString()} XP</Muted>
+        {nextRank && (
+          <View style={[styles.row, { gap: 6 }]}>
+            <RankBadge rank={nextRank.rank} size={18} />
+            <Text style={{ color: colors.muted, fontSize: 12, fontWeight: '700' }}>
+              {nextRank.rank}-Rank at Lv. {nextRank.minLevel} · {nextRank.minLevel - g.level} level{nextRank.minLevel - g.level === 1 ? '' : 's'} to go
+            </Text>
+          </View>
+        )}
       </Panel>
 
       {today && (
@@ -107,6 +126,15 @@ export default function Status() {
                 <Text style={{ color: colors.text, fontSize: 22, fontWeight: '900' }}>{Math.round(taskCompletion(today.tasks) * 100)}%</Text>
               </View>
             </View>
+            {!today.isRest && (
+              <View style={[styles.row, { gap: 6, flexWrap: 'wrap' }]}>
+                <Text style={pill}>Base ×{today.intensity.base.toFixed(2)}</Text>
+                <Text style={[pill, today.intensity.diet > 0 ? { color: colors.danger } : today.intensity.diet < 0 ? { color: colors.info } : null]}>
+                  Diet {today.intensity.diet >= 0 ? '+' : ''}{Math.round(today.intensity.diet * 100)}%
+                </Text>
+                {today.intensity.penalty > 0 && <Text style={[pill, { color: colors.danger }]}>Penalty +{today.intensity.penalty.toFixed(2)}</Text>}
+              </View>
+            )}
             <ProgressBar value={taskCompletion(today.tasks)} color={today.claimed ? colors.success : colors.primary} />
             {today.penaltyTasks.length > 0 && !today.penaltyCleared && (
               <Text style={{ color: colors.danger, fontWeight: '800' }}>⚠ Penalty quest active — {today.penaltyTasks.length} tasks</Text>
@@ -125,7 +153,11 @@ export default function Status() {
       <Panel
         title="Stats"
         icon="chart-box"
-        right={g.statPoints > 0 ? <Text style={{ color: colors.accent, fontWeight: '900' }}>{g.statPoints} points available</Text> : undefined}
+        right={g.statPoints > 0 ? (
+          <Pressable onPress={() => setAssigning(!assigning)} style={{ backgroundColor: assigning ? colors.accent : colors.accentSoft, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 }}>
+            <Text style={{ color: assigning ? '#1A1206' : colors.accent, fontWeight: '900', fontSize: 12 }}>{assigning ? 'Done' : `Assign ${g.statPoints} pts`}</Text>
+          </Pressable>
+        ) : undefined}
       >
         {(Object.keys(STAT_LABELS) as StatKey[]).map((k) => (
           <View key={k} style={styles.between}>
@@ -136,7 +168,7 @@ export default function Status() {
               <Muted style={{ fontSize: 12 }}>{STAT_LABELS[k].desc}</Muted>
             </View>
             <Text style={{ color: colors.text, fontSize: 20, fontWeight: '900', marginHorizontal: 12, fontVariant: ['tabular-nums'] }}>{g.stats[k]}</Text>
-            {g.statPoints > 0 && (
+            {assigning && g.statPoints > 0 && (
               <Pressable onPress={() => { tap('medium'); g.allocate(k); }} style={{ backgroundColor: colors.accentSoft, borderRadius: 8, padding: 6 }}>
                 <Icon name="plus" size={18} color={colors.accent} />
               </Pressable>
@@ -152,3 +184,14 @@ export default function Status() {
     </Screen>
   );
 }
+
+const pill = {
+  color: colors.muted,
+  backgroundColor: colors.panelHi,
+  borderRadius: 6,
+  paddingHorizontal: 8,
+  paddingVertical: 3,
+  fontSize: 12,
+  fontWeight: '800',
+  overflow: 'hidden',
+} as const;

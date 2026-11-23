@@ -27,7 +27,8 @@ interface Actions {
   logWeight: (kg: number) => void;
   addPhoto: (uri: string, note: string) => void;
   removePhoto: (id: string) => void;
-  markMessagesRead: () => void;
+  /** Marks one message read, or all of them when no id is given. */
+  markMessagesRead: (id?: string) => void;
   setAvatar: (a: Partial<Avatar>) => void;
   setTitle: (title: string | null) => void;
   updateProfile: (p: Partial<Profile>) => void;
@@ -92,7 +93,7 @@ export const useGame = create<GameStore>()(
             checkAchievements(d, todayKey());
           }),
         removePhoto: (id) => mutate((d) => void (d.photos = d.photos.filter((p) => p.id !== id))),
-        markMessagesRead: () => mutate((d) => d.messages.forEach((m) => (m.read = true))),
+        markMessagesRead: (id) => mutate((d) => d.messages.forEach((m) => { if (!id || m.id === id) m.read = true; })),
         setAvatar: (a) => mutate((d) => void (d.avatar = { ...d.avatar, ...a })),
         setTitle: (title) => mutate((d) => void (d.activeTitle = title)),
         updateProfile: (p) =>

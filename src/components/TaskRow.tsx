@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { formatAmount, getExercise } from '../data/exercises';
 import type { QuestTask, Unit } from '../engine/types';
@@ -16,23 +17,26 @@ export function TaskRow({ task, onChange, locked, penalty }: {
   const done = task.done >= task.target;
   const tint = penalty ? colors.danger : done ? colors.success : colors.primary;
   const ex = getExercise(task.exerciseId);
+  // Finished tasks fold their controls away; tap the row to adjust anyway.
+  const [expanded, setExpanded] = useState(false);
+  const showControls = !locked && (!done || expanded);
 
   return (
     <View style={{ gap: 8, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-      <View style={styles.between}>
+      <Pressable disabled={locked || !done} onPress={() => setExpanded(!expanded)} style={styles.between}>
         <View style={[styles.row, { gap: 8, flex: 1 }]}>
           <Icon name={done ? 'checkbox-marked-circle' : 'checkbox-blank-circle-outline'} color={tint} size={22} />
           <View style={{ flex: 1 }}>
             <Text style={{ color: colors.text, fontWeight: '800', fontSize: 15 }}>{task.label}</Text>
-            <Muted style={{ fontSize: 12 }} >{ex.cue}</Muted>
+            {!done && <Muted style={{ fontSize: 12 }}>{ex.cue}</Muted>}
           </View>
         </View>
         <Text style={{ color: done ? colors.success : colors.text, fontWeight: '900', fontVariant: ['tabular-nums'] }}>
           {formatAmount(task.done, task.unit)} / {formatAmount(task.target, task.unit)}
         </Text>
-      </View>
+      </Pressable>
       <ProgressBar value={task.done / task.target} color={tint} height={6} />
-      {!locked && (
+      {showControls && (
         <View style={styles.between}>
           <Stepper value={task.done} step={STEP[task.unit]} onChange={onChange} format={(v) => formatAmount(v, task.unit)} />
           <View style={[styles.row, { gap: 6 }]}>

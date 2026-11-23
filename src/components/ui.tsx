@@ -61,9 +61,9 @@ export function Panel({ title, icon, right, children, style, tone = 'default' }:
     <View style={[styles.panel, { borderColor: border }, style]}>
       {title ? (
         <View style={styles.panelHeader}>
-          <View style={styles.row}>
+          <View style={[styles.row, { flex: 1, marginRight: right ? 10 : 0 }]}>
             {icon ? <Icon name={icon} size={16} color={tone === 'default' ? colors.primary : border} /> : null}
-            <Text style={[styles.panelTitle, icon ? { marginLeft: 6 } : null]}>{title.toUpperCase()}</Text>
+            <Text numberOfLines={1} style={[styles.panelTitle, { flexShrink: 1 }, icon ? { marginLeft: 6 } : null]}>{title.toUpperCase()}</Text>
           </View>
           {right}
         </View>

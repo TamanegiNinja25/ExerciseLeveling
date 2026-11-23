@@ -98,7 +98,7 @@ export default function Fuel() {
   const t = totalsFor(g.foods, date);
   const water = g.water[date] ?? 0;
   const entries = g.foods.filter((f) => f.date === date).sort((a, b) => b.time - a.time);
-  const impact = dietModifier(t, targets, profile.goal);
+  const impact = dietModifier(t, targets, profile.goal, true);
   const [open, setOpen] = useState(false);
   const remaining = targets.kcal - t.kcal;
 
@@ -122,7 +122,7 @@ export default function Fuel() {
         <Button label="Log food" icon="plus" onPress={() => setOpen(true)} />
       </Panel>
 
-      <Panel title="Tomorrow's intensity impact" icon="speedometer" tone={impact.value > 0.1 ? 'danger' : impact.value < 0 ? 'accent' : 'success'}
+      <Panel title="Impact on tomorrow" icon="speedometer" tone={impact.value > 0.1 ? 'danger' : impact.value < 0 ? 'accent' : 'success'}
         right={<Text style={{ color: impact.value > 0 ? colors.danger : impact.value < 0 ? colors.info : colors.success, fontWeight: '900', fontSize: 18 }}>{impact.value >= 0 ? '+' : ''}{Math.round(impact.value * 100)}%</Text>}>
         {impact.reasons.map((r) => (
           <Muted key={r} style={{ fontSize: 13 }}>• {r}</Muted>

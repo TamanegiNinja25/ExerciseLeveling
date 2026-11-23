@@ -72,6 +72,15 @@ test('diet modifier: surplus raises, under-fuelling lowers, junk is taxed', () =
   assert.equal(junk, 0.15);
 });
 
+test('diet modifier: an unfinished day is not treated as under-fuelled', () => {
+  const targets = computeTargets(profile());
+  const lunchOnly = totals({ kcal: targets.kcal * 0.3 });
+  assert.equal(dietModifier(lunchOnly, targets, 'general').value, -0.15);
+  assert.equal(dietModifier(lunchOnly, targets, 'general', true).value, 0);
+  // A surplus already eaten still counts mid-day.
+  assert.equal(dietModifier(totals({ kcal: targets.kcal * 1.5 }), targets, 'general', true).value, 0.3);
+});
+
 test('quests: targets scale with intensity', () => {
   const p = profile();
   const base = generateDailyTasks(p, 1, false);

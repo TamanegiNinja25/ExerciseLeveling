@@ -16,6 +16,17 @@ A fitness RPG for Android that turns real workouts into daily quests, with a cal
 
 ---
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/status.jpg" width="200" alt="Status" />
+  <img src="docs/screenshots/quest.jpg" width="200" alt="Daily quest" />
+  <img src="docs/screenshots/calendar.jpg" width="200" alt="Training calendar" />
+  <img src="docs/screenshots/fuel.jpg" width="200" alt="Fuel / nutrition" />
+</p>
+
+---
+
 ## ✨ Features
 
 ### Core RPG loop
@@ -55,7 +66,7 @@ intensity = clamp( base × (1 + diet) + penalty , 0.5 , 3.0 )
 - Personal **calorie, macro and water targets** (Mifflin–St Jeor BMR × activity × goal).
 - **Food log** with 30 built-in foods plus custom entries, each tagged whole / processed / sugary.
 - **Water tracker** and **goal-based meal plan** suggestions.
-- A live **"tomorrow's intensity impact"** readout.
+- A live **"impact on tomorrow"** readout. While the day is still in progress, low calories so far aren't counted as under-fuelling.
 
 ### Progress
 - **Victory photos** from the camera or gallery, copied into app storage and stamped with your level.

@@ -94,7 +94,7 @@ export default function Calendar() {
                 >
                   <Text style={{ color: future ? colors.faint : colors.text, fontWeight: '800', fontSize: 13 }}>{Number(k.slice(8))}</Text>
                   {rec && !rec.isRest ? (
-                    <Text style={{ color: intensityColor(rec.intensity.total), fontSize: 9, fontWeight: '800' }}>×{rec.intensity.total.toFixed(1)}</Text>
+                    <Text style={{ color: colors.muted, fontSize: 10, fontWeight: '800' }}>×{rec.intensity.total.toFixed(1)}</Text>
                   ) : rec?.isRest || (future && rest) ? (
                     <Icon name="sleep" size={10} color={colors.info} />
                   ) : null}
