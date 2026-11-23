@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Exercise Leveling",
+    "slug": "exercise-leveling",
+    "version": "1.0.0",
+    "scheme": "exerciseleveling",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0B0D14",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B0D14"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "io.github.tamanegininja25.exerciseleveling"
+    },
+    "android": {
+      "package": "io.github.tamanegininja25.exerciseleveling",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#0B0D14",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "color": "#8B5CF6"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Exercise Leveling uses your photos to save victory/progress pictures.",
+          "cameraPermission": "Exercise Leveling uses the camera to take victory/progress pictures."
+        }
+      ]
+    ]
+  }
+}
