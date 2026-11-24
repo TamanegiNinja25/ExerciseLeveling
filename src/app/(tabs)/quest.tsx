@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
+import { Embers, GlowText } from '@/components/Flame';
 import { TaskRow } from '@/components/TaskRow';
 import { Button, Icon, Label, Muted, Panel, ProgressBar, Screen, styles } from '@/components/ui';
 import { formatLong, todayKey } from '@/engine/dates';
@@ -28,10 +29,9 @@ export default function Quest() {
   return (
     <Screen>
       <View style={{ alignItems: 'center', gap: 4, paddingVertical: 4 }}>
+        <Embers count={12} width={360} height={130} />
         <Label>{formatLong(date)}</Label>
-        <Text style={{ color: colors.text, fontSize: 24, fontWeight: '900', letterSpacing: 2 }}>
-          {rec.isRest ? 'RECOVERY QUEST' : 'DAILY QUEST'}
-        </Text>
+        <GlowText size={24}>{rec.isRest ? 'RECOVERY QUEST' : 'DAILY QUEST'}</GlowText>
         <Muted style={{ textAlign: 'center' }}>
           {rec.isRest
             ? 'Scheduled recovery. Move lightly and stretch — no penalty today.'

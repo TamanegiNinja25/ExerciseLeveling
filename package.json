@@ -1,6 +1,6 @@
 {
   "name": "exercise-leveling",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -40,6 +40,6 @@
     "prebuild": "expo prebuild --platform android --clean"
   },
   "private": true,
-  "description": "Exercise Leveling — a fitness RPG that turns daily workouts into quests, with calendar-based progressive intensity driven by your diet.",
+  "description": "Exercise Leveling \u2014 a fitness RPG that turns daily workouts into quests, with calendar-based progressive intensity driven by your diet.",
   "license": "MIT"
 }

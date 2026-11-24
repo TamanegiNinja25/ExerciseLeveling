@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { addDays, diffDays, monthGrid } from '../src/engine/dates';
 import { createInitialData, rollover, setTaskDone, startGame } from '../src/engine/game';
-import { computeIntensity, dietModifier, nextProgression, projectIntensity } from '../src/engine/intensity';
+import { blendDiet, computeIntensity, dietModifier, nextProgression, projectIntensity } from '../src/engine/intensity';
 import { grantXp, loseXp, rankForLevel, xpToNext } from '../src/engine/leveling';
 import { computeTargets, type DayTotals } from '../src/engine/nutrition';
 import { generateDailyTasks } from '../src/engine/quests';
@@ -79,6 +79,28 @@ test('diet modifier: an unfinished day is not treated as under-fuelled', () => {
   assert.equal(dietModifier(lunchOnly, targets, 'general', true).value, 0);
   // A surplus already eaten still counts mid-day.
   assert.equal(dietModifier(totals({ kcal: targets.kcal * 1.5 }), targets, 'general', true).value, 0.3);
+});
+
+test('diet blend: 50/30/20 weighted average, renormalised for short history', () => {
+  assert.equal(blendDiet([]), 0);
+  assert.equal(blendDiet([0.3]), 0.3);
+  assert.ok(Math.abs(blendDiet([0.3, 0]) - 0.1875) < 1e-9); // 0.15 / 0.8
+  assert.ok(Math.abs(blendDiet([0.33, 0, -0.15]) - 0.135) < 1e-9);
+  assert.ok(Math.abs(blendDiet([0.1, 0.1, 0.1, 9]) - 0.1) < 1e-9); // only 3 days count
+});
+
+test('game: one feast is spread across the next three days', () => {
+  const d = newGame();
+  const targets = computeTargets(d.profile!);
+  const day1 = addDays(START, 1);
+  // Normal days around a single feast on day 3 (unlogged days would add their own +5%).
+  const log = [[START, 1], [day1, 1], [addDays(START, 2), 1.5], [addDays(START, 3), 1], [addDays(START, 4), 1]] as const;
+  for (const [date, ratio] of log) {
+    const kcal = targets.kcal * ratio;
+    d.foods.push({ id: date, date, name: 'Meal', kcal, protein: 0, carbs: 0, fat: 0, tag: 'whole', time: 0 });
+  }
+  const diets = [3, 4, 5].map((n) => computeIntensity(d, addDays(START, n)).diet);
+  assert.deepEqual(diets, [0.15, 0.09, 0.06]); // 0.3 weighted 0.5 → 0.3 → 0.2
 });
 
 test('quests: targets scale with intensity', () => {

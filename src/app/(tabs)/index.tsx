@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { FlameAura } from '@/components/Flame';
 import {
   Avatar, Button, Icon, Label, Muted, Panel, ProgressBar, RankBadge, Screen, styles, tap,
 } from '@/components/ui';
@@ -24,7 +25,7 @@ function useCountdown() {
 }
 
 /** Which unread notice deserves the home-screen banner. */
-const BANNER_PRIORITY: Record<MessageKind, number> = { penalty: 5, rank: 4, levelup: 3, achievement: 2, quest: 1, info: 1 };
+const BANNER_PRIORITY: Record<MessageKind, number> = { penalty: 5, rank: 4, levelup: 3, achievement: 2, clear: 2, quest: 1, info: 1 };
 
 function Tile({ icon, value, label, color = colors.text }: { icon: string; value: string | number; label: string; color?: string }) {
   return (
@@ -52,9 +53,13 @@ export default function Status() {
 
   return (
     <Screen>
-      <View style={styles.between}>
+      {/* Extra headroom so the avatar's flame crown isn't clipped. */}
+      <View style={[styles.between, { paddingTop: 20 }]}>
         <View style={[styles.row, { gap: 12, flex: 1 }]}>
-          <Avatar color={g.avatar.color} emblem={g.avatar.emblem} rank={rank} size={64} />
+          {/* The fire grows with your streak: a 14-day streak burns at full power. */}
+          <FlameAura size={64} power={0.25 + g.streak / 14}>
+            <Avatar color={g.avatar.color} emblem={g.avatar.emblem} rank={rank} size={64} />
+          </FlameAura>
           <View style={{ flex: 1 }}>
             <Text style={{ color: colors.text, fontSize: 20, fontWeight: '900' }} numberOfLines={1}>{profile.name}</Text>
             <Text style={{ color: colors.accent, fontSize: 12, fontWeight: '700' }}>{g.activeTitle ?? 'No title equipped'}</Text>

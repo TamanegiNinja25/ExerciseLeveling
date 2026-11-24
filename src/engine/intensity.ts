@@ -90,15 +90,50 @@ export function penaltyLoad(d: GameData, date: DateKey): Modifier {
   };
 }
 
+/**
+ * Combine recent daily diet modifiers into the one that drives `date`.
+ * `recent[0]` is yesterday, `recent[1]` the day before, and so on (up to 3
+ * days; days before the profile existed are omitted). Values are fractions,
+ * e.g. +0.27 for a surplus day, -0.15 for an under-fuelled day.
+ */
+export const DIET_WEIGHTS = [0.5, 0.3, 0.2];
+
+export function blendDiet(recent: number[]): number {
+  const days = recent.slice(0, DIET_WEIGHTS.length);
+  if (days.length === 0) return 0;
+  // Renormalise so new players with only 1–2 days of history aren't diluted toward 0.
+  const weightSum = DIET_WEIGHTS.slice(0, days.length).reduce((a, w) => a + w, 0);
+  return days.reduce((acc, v, i) => acc + v * DIET_WEIGHTS[i], 0) / weightSum;
+}
+
+function blended(recent: Modifier[]): Modifier {
+  const value = round2(blendDiet(recent.map((m) => m.value)));
+  if (recent.length === 1) return { value, reasons: recent[0].reasons };
+  const parts = recent.map((m) => pct(m.value)).join(' / ');
+  return {
+    value,
+    reasons: [
+      ...recent[0].reasons,
+      `Diet averaged over ${recent.length} days (${parts}, weighted 50/30/20): ${pct(value)}`,
+    ],
+  };
+}
+
 export function computeIntensity(d: GameData, date: DateKey, dietInProgress = false): IntensityBreakdown {
   const base = round2(d.progression);
   if (!d.profile) return { base, diet: 0, penalty: 0, total: base, reasons: [] };
 
   const targets = computeTargets(d.profile);
+  const goal = d.profile.goal;
+  const createdAt = d.profile.createdAt;
+  const recent = [1, 2, 3]
+    .map((i) => addDays(date, -i))
+    .filter((k) => k >= createdAt)
+    .map((k, i) => dietModifier(totalsFor(d.foods, k), targets, goal, dietInProgress && i === 0));
   // There is no "yesterday" to have logged on the very first day.
-  const diet: Modifier = date === d.profile.createdAt
+  const diet: Modifier = recent.length === 0
     ? { value: 0, reasons: ['First day: no diet history yet'] }
-    : dietModifier(totalsFor(d.foods, addDays(date, -1)), targets, d.profile.goal, dietInProgress);
+    : blended(recent);
   const pen = penaltyLoad(d, date);
   const total = round2(Math.min(INTENSITY_MAX, Math.max(INTENSITY_MIN, base * (1 + diet.value) + pen.value)));
 

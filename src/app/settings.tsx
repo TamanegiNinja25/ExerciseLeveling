@@ -108,7 +108,7 @@ export default function Settings() {
         <Muted style={{ fontSize: 12 }}>Changes re-plan today's quest only if you haven't started it.</Muted>
       </Panel>
 
-      <Panel title="Reminders" icon="bell-ring">
+      <Panel title="Reminders & feel" icon="bell-ring">
         <Toggle label="Daily quest reminder" value={g.settings.notifications} onChange={(v) => g.updateSettings({ notifications: v })} />
         <View style={styles.between}>
           <Label>Time</Label>
@@ -119,6 +119,7 @@ export default function Settings() {
         </View>
         <Toggle label="9 PM deadline warning" value={g.settings.eveningWarning} onChange={(v) => g.updateSettings({ eveningWarning: v })} />
         <Toggle label="Haptic feedback" value={g.settings.haptics} onChange={(v) => g.updateSettings({ haptics: v })} />
+        <Toggle label="Blue-flame visual effects" value={g.settings.effects !== false} onChange={(v) => g.updateSettings({ effects: v })} />
       </Panel>
 
       <Panel title="Danger zone" icon="alert" tone="danger">

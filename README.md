@@ -54,7 +54,7 @@ intensity = clamp( base × (1 + diet) + penalty , 0.5 , 3.0 )
 | Component | How it moves |
 |---|---|
 | **Base progression** | +2% per cleared day, +0.5% per partial day, −3% per missed day (detraining). Floor 1.0×, cap 2.5×. |
-| **Diet** (yesterday's food log) | Calorie surplus >115% → up to **+30%** (halved if you're bulking) · under-fuelled <70% → **−15%** for safety · protein goal met → **+5%** · each processed/sugary item → **+3%** (max +15%) · nothing logged → **+5%** |
+| **Diet** (last 3 days of food logs, weighted **50 / 30 / 20**) | Each day scores: calorie surplus >115% → up to **+30%** (halved if you're bulking) · under-fuelled <70% → **−15%** for safety · protein goal met → **+5%** · each processed/sugary item → **+3%** (max +15%) · nothing logged → **+5%**. One big meal spreads out as roughly +15% → +9% → +6% instead of spiking a single day. |
 | **Penalty load** | +0.10× for each missed day in the last 7 (max +0.40×) |
 
 - **Monthly calendar** colour-codes every day (cleared / partial / missed / recovery), shows its multiplier, and marks workouts and penalties.
@@ -75,6 +75,7 @@ intensity = clamp( base × (1 + diet) + penalty , 0.5 , 3.0 )
 
 ### Quality of life
 - **Daily reminder** plus a **9 PM deadline warning** (local notifications).
+- **Blue-flame effects**: an animated fire aura around your avatar that grows with your streak, rising embers, and a full-screen fire burst on **Quest Cleared**, **Level Up** and **Rank Up**. With the OS reduce-motion setting on, the flames stay still, and you can turn them off in Settings.
 - **Avatar customisation**: colours, plus emblems that unlock with level.
 - Works fully **offline**. All data stays on your device (AsyncStorage).
 

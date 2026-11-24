@@ -43,6 +43,11 @@ The release APK is built in GitHub Actions (`.github/workflows/android.yml`): `e
 
 ## Changelog
 
+### v1.1.0 (2026-11-24)
+- **Diet smoothing:** `blendDiet()` in `engine/intensity.ts` takes a 50/30/20 weighted average of the last 3 days' diet modifiers (newest first), renormalised when there's less history. Only the newest day uses the in-progress rule. The day report explains the blend. Tests cover the weights and a feast spreading +15% → +9% → +6%.
+- **Blue-flame effects** (`components/Flame.tsx`, RN `Animated` + `expo-linear-gradient`, no new native deps): `FlameAura` (avatar fire scaled by streak), `Embers`, `GlowText`, and `FlameBurst`, a full-screen celebration fired from `(tabs)/_layout.tsx` for messages that arrive while the app is open (rank > level-up > quest clear). New message kind `clear` for daily quest clears.
+- `useFlameMode()`: `settings.effects === false` → off; OS reduce motion → still flames (no flicker or embers); otherwise animated. `Settings.effects` is optional, so older saves default to on.
+
 ### v1.0.0 UI polish (2026-11-23, before tagging)
 Driven by a snapshot review with 4 weeks of simulated data:
 - **Forecast fix:** `dietModifier(..., inProgress)` no longer flags a day still in progress as "under-fuelled" (a 3 PM lunch-only log showed −15%). Used by the Fuel impact panel and `projectIntensity`. Surplus/junk still count immediately. Test added.

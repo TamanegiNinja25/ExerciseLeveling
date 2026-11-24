@@ -11,6 +11,7 @@ const KIND: Record<MessageKind, { icon: string; color: string }> = {
   rank: { icon: 'chevron-triple-up', color: colors.danger },
   penalty: { icon: 'skull-crossbones', color: colors.danger },
   quest: { icon: 'sword-cross', color: colors.success },
+  clear: { icon: 'check-decagram', color: colors.success },
   achievement: { icon: 'trophy', color: colors.accent },
   info: { icon: 'information', color: colors.info },
 };

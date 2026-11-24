@@ -39,7 +39,7 @@ export function createInitialData(): GameData {
     avatar: { color: '#8B5CF6', emblem: 'sword' },
     messages: [],
     lastEvaluated: null,
-    settings: { notifications: true, eveningWarning: true, haptics: true },
+    settings: { notifications: true, eveningWarning: true, haptics: true, effects: true },
     lifetime: {},
   };
 }
@@ -164,7 +164,7 @@ function claimIfComplete(d: GameData, rec: DayRecord): void {
       if (d.streak % 7 === 0) d.stats.foc += 1;
       grantXp(d, xp, rec.date);
       rec.xpDelta += xp;
-      pushMessage(d, rec.date, 'quest', 'DAILY QUEST CLEARED',
+      pushMessage(d, rec.date, 'clear', 'DAILY QUEST CLEARED',
         `+${xp} XP at ${rec.intensity.total.toFixed(2)}× intensity. Streak: ${d.streak} day${d.streak === 1 ? '' : 's'}.`);
     }
   }

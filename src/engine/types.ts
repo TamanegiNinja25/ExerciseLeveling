@@ -102,7 +102,7 @@ export interface WorkoutSession {
   xp: number;
 }
 
-export type MessageKind = 'levelup' | 'penalty' | 'quest' | 'achievement' | 'info' | 'rank';
+export type MessageKind = 'levelup' | 'penalty' | 'quest' | 'clear' | 'achievement' | 'info' | 'rank';
 
 export interface SystemMessage {
   id: string;
@@ -122,6 +122,8 @@ export interface Settings {
   notifications: boolean;
   eveningWarning: boolean;
   haptics: boolean;
+  /** Blue-flame animations. Optional so older saves default to on. */
+  effects?: boolean;
 }
 
 export interface GameData {

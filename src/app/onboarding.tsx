@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { Button, Chip, H1, Icon, Label, Muted, Panel, ProgressBar, Screen, Stepper, styles } from '@/components/ui';
+import { FlameAura, GlowText } from '@/components/Flame';
+import { Button, Chip, Icon, Label, Muted, Panel, ProgressBar, Screen, Stepper, styles } from '@/components/ui';
 import { formatAmount, getExercise } from '@/data/exercises';
 import { generateDailyTasks } from '@/engine/quests';
 import { computeTargets, GOAL_LABEL } from '@/engine/nutrition';
@@ -93,8 +94,12 @@ export default function Onboarding() {
       {step === 0 && (
         <Panel>
           <View style={{ alignItems: 'center', gap: 8, paddingVertical: 12 }}>
-            <Icon name="shield-sword" size={64} color={colors.primary} />
-            <H1>EXERCISE LEVELING</H1>
+            <View style={{ paddingVertical: 20 }}>
+              <FlameAura size={72} power={0.8}>
+                <Icon name="shield-sword" size={64} color={colors.text} />
+              </FlameAura>
+            </View>
+            <GlowText size={26}>EXERCISE LEVELING</GlowText>
             <Muted style={{ textAlign: 'center' }}>
               Real workouts become quests. Clear your daily quest to gain XP, level up, and raise your rank from E to S.
               Miss it, and the penalty finds you.

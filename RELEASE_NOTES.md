@@ -1,17 +1,17 @@
-## Exercise Leveling v1.0.0 — first release 🎉
+## Exercise Leveling v1.1.0: blue flame 🔥
 
-Turn your workouts into an RPG. Clear daily quests, level up from **E-Rank to S-Rank**, and watch the **calendar** raise your training intensity day by day based on your consistency and what you ate.
+### New
+- 🔥 **Blue-flame effects**: your avatar now burns with a blue fire aura that grows as your streak climbs. Rising embers float over the daily quest, and a full-screen wall of fire marks every **Quest Cleared**, **Level Up** and **Rank Up**.
+- ⚖️ **Smoother diet-driven intensity**: tomorrow's intensity now uses a weighted average of your last 3 days of eating (50 / 30 / 20). One big meal no longer spikes a single day; its effect fades over three days.
 
-### Highlights
-- ⚔️ **Daily quests** scaled to your fitness level and goal, with a midnight deadline
-- 💀 **Penalties**: XP loss, streak reset, and a penalty quest for missed days
-- 🗓️ **Diet-driven progressive intensity**: surplus or junk food → harder tomorrow, under-eating → safer tomorrow, consistency → +2% per day
-- 🏋️ **18 ranked workouts** with exercise swaps and a guided rest timer
-- 🍱 **Food, macro and water tracking** with a goal-based meal plan
-- 📸 **Victory photos**, weight log, 20 achievements and unlockable titles
-- 🔔 Daily reminder plus a 9 PM deadline warning
+### Improved
+- An honest forecast mid-day: a half-logged day is no longer treated as "under-fuelled".
+- The Status screen explains your intensity (Base / Diet / Penalty), shows your next rank, and has a tidier stat-point flow.
+- Tasks come first on the Quest screen, and finished tasks collapse.
+- Calendar cells use one colour per day outcome.
+
+### Accessibility
+With the OS **reduce motion** setting on, the flames stay still. Turn them off completely in **Settings → Blue-flame visual effects**.
 
 ### Install
-Download **`ExerciseLeveling-v1.0.0.apk`** below, allow "Install unknown apps", and open it. Requires Android 7.0+.
-
-> This build is signed with the standard React Native debug key, which is fine for sideloading but not the Play Store.
+Download **`ExerciseLeveling-v1.1.0.apk`** below. It installs over v1.0.0 and keeps your progress.
